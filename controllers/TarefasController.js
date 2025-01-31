@@ -4,7 +4,7 @@ class TarefasController {
     static async criarTarefa(req, res){
         const dados = req.body;
         try{
-            const create = database.tarefas.create(dados);
+            const create = await database.tarefas.create(dados);
             return res.status(201).json(create);
         } catch (error) {
             return res.status(500).json(error.message);
@@ -47,6 +47,10 @@ class TarefasController {
     static async deletarTarefa(req, res){
         const {id} = req.params;
         try{
+            const tarefaExistente = await database.tarefas.findOne({where: {id: Number(id)}});
+            if(!tarefaExistente){
+                return res.status(404).send("Não foi possível encontrar uma tarefa com este id!");
+            }
             await database.tarefas.destroy({where: {id: Number(id)}});
             return res.status(200).send("Tarefa deletada com sucesso!");
         } catch(error) {

@@ -53,6 +53,10 @@ class UsuariosController{
     static async deletarUsuario(req, res){
         const {id} = req.params;
         try{
+            const usuarioExistente = await database.usuarios.findOne({where: {id: Number(id)}});
+            if(!usuarioExistente){
+                return res.status(404).send("Não foi possível encontrar um usuário com este id!");
+            }
             await database.usuarios.destroy({where: {id: Number(id)}});
             return res.status(200).send("Usuário deletado com sucesso!");
         } catch(error) {
