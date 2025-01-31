@@ -28,6 +28,9 @@ class UsuariosController{
         const {id} = req.params;
         try{
             const select = await database.usuarios.findOne({where: {id: Number(id)}});
+            if(!select){
+                return res.status(404).send("Não foi possível encontrar um usuário com este id!");
+            }
             return res.status(200).json(select);
         } catch {
             return res.status(500).json(error.message);
@@ -39,6 +42,9 @@ class UsuariosController{
         try{
             await database.usuarios.update(novosDados, {where: {id: Number(id)}});
             const select = await database.usuarios.findOne({where: {id: Number(id)}});
+            if(!select){
+                return res.status(404).send("Não foi possível encontrar um usuário com este id!");
+            }
             return res.status(200).json(select);
         } catch (error){
             return res.status(500).json(error.message);
