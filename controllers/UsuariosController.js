@@ -1,3 +1,4 @@
+const { Model } = require("sequelize");
 const database = require("../models");
 
 class UsuariosController{
@@ -9,7 +10,6 @@ class UsuariosController{
         if(checarEmail){
             return res.status(400).send("Já existe um usuário cadastrado com este email!");
         }
-
             const create = await database.usuarios.create(dadosUsuario);
             return res.status(201).json(create);
         } catch (error) {
@@ -60,6 +60,22 @@ class UsuariosController{
             await database.usuarios.destroy({where: {id: Number(id)}});
             return res.status(200).send("Usuário deletado com sucesso!");
         } catch(error) {
+            return res.status(500).json(error.message);
+        }
+    }
+    static async selecionarTarefasDoUsuario(req, res){
+        const {id} = req.params;
+        try{
+            const usuario = await database.usuarios.findOne({where: {id: Number(id)}});
+            if(!usuario){
+                return res.status(404).send("Não foi encontrado um usuário com este id!");
+            }
+            const select = await database.usuarios.findOne({include: 
+                {model: database.tarefas, 
+                    attributes: ['titulo', 'descricao', 'status']},
+                attributes: ['nome']});
+                return res.status(200).json(select);
+        } catch (error) {
             return res.status(500).json(error.message);
         }
     }
